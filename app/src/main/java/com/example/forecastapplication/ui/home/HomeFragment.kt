@@ -13,21 +13,33 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.forecastapplication.R
-import com.example.forecastapplication.CityListAdapter
+import com.example.forecastapplication.*
 import com.example.forecastapplication.data.db.room.entity.City
+import com.example.forecastapplication.data.repositories.CityRepository
+import com.example.forecastapplication.data.repositories.WeatherInfoRepository
+import com.example.forecastapplication.data.server.ApiClient
+import com.example.forecastapplication.data.server.ApiService
+import javax.inject.Inject
 
 class HomeFragment : Fragment() {
     private lateinit var homeViewModel: HomeViewModel
     private var adapter: CityListAdapter? = null
+    private var apiService: ApiService? = null
+    private var tvCity: TextView? = null
+    private var tvTemp: TextView? = null
+    private var tvHumidity: TextView? = null
+    private var tvWind: TextView? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        homeViewModel =
-                ViewModelProvider(this).get(HomeViewModel::class.java)
+    @Inject
+    lateinit var cityRepository: CityRepository
+    @Inject
+    lateinit var weatherRepository: WeatherInfoRepository
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        (requireContext().applicationContext as MyApplication).appComponent.inject(this)
+        homeViewModel = ViewModelProvider(this,
+            ViewModelFactory(cityRepository, weatherRepository))
+            .get(HomeViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
         val textView: TextView = root.findViewById(R.id.text_home)
         homeViewModel.getAllCities()?.observe(viewLifecycleOwner, Observer {
@@ -46,8 +58,12 @@ class HomeFragment : Fragment() {
             onNewCity(city)
         }
 
-        //requireContext().setSupportActionBar(root.findViewById(R.id.toolbar))
+        //activity?.setActionBar(root.findViewById(R.id.toolbar))
         //root.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout).title = title
+        tvCity = root.findViewById(R.id.tv_city)
+        tvTemp = root.findViewById(R.id.tv_temp)
+        tvHumidity = root.findViewById(R.id.tv_humidity)
+        tvWind = root.findViewById(R.id.tv_wind)
 
         val recyclerView: RecyclerView = root.findViewById(R.id.recyclerview)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -55,6 +71,7 @@ class HomeFragment : Fragment() {
             override fun onClickDelete(city: City?, position: Int) {
                 homeViewModel.deleteCity(city)
             }
+
             override fun onClickItem(city: City?, position: Int) {
                 //homeViewModel.deleteCity(city)
                 city?.let { homeViewModel.insert(City(city.cityName)) }
@@ -63,9 +80,24 @@ class HomeFragment : Fragment() {
         })
         recyclerView.adapter = adapter
 
-        homeViewModel.getAllCities()?.observe(viewLifecycleOwner, { it ->
-                adapter!!.setData(it as List<City>?)
-            })
+        homeViewModel.getAllCities()?.observe(viewLifecycleOwner, {
+            adapter!!.setData(it as List<City>?)
+            it.let {
+                if(it.isNotEmpty()) {
+                    val cityName = it[0].cityName
+                    tvCity?.text = cityName
+                    homeViewModel.getCurrentWeather(cityName, Constants.UNITS, Constants.LANGUAGE, Constants.API_KEY)
+                }
+            }
+        })
+        homeViewModel.getResultLiveData().observe(viewLifecycleOwner, {
+            tvTemp?.text = "Temperature: " + it.getMain().getTemp().toString()
+            tvHumidity?.text = "Humidity: " + it.getMain().getHumidity().toString()
+            tvWind?.text = "Wind: " + it.getWind().getSpeed().toString()
+        })
+        homeViewModel.getFailLiveData().observe(viewLifecycleOwner, {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+        })
 
         return root
     }

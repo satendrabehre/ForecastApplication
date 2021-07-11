@@ -28,7 +28,45 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/Theme.ForecastApplication.PopupOverlay" />
+                app:popupTheme="@style/Theme.ForecastApplication.PopupOverlay">
+
+                <TextView
+                    android:id="@+id/tv_city"
+                    android:layout_gravity="center_horizontal"
+                    android:textSize="22sp"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="City"/>
+
+            </androidx.appcompat.widget.Toolbar>
+
+            <TextView
+                android:id="@+id/tv_temp"
+                android:layout_gravity="center_horizontal"
+                android:textSize="28sp"
+                android:layout_marginTop="100dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Temperature"/>
+
+            <TextView
+                android:id="@+id/tv_humidity"
+                android:layout_gravity="center_horizontal"
+                android:textSize="18sp"
+                android:layout_marginTop="150dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Humidity"/>
+
+            <TextView
+                android:id="@+id/tv_wind"
+                android:layout_gravity="center_horizontal"
+                android:textSize="18sp"
+                android:layout_marginTop="180dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wind"/>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>

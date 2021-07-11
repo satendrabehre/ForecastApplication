@@ -1,41 +1,54 @@
 package com.example.forecastapplication.ui.home
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import com.example.forecastapplication.data.db.CityRepository
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import com.example.forecastapplication.data.repositories.CityRepository
 import com.example.forecastapplication.data.db.room.entity.City
+import com.example.forecastapplication.data.repositories.WeatherInfoRepository
+import com.example.forecastapplication.data.response.currentweather.CurrentWeatherResponse
 
-class HomeViewModel(application: Application) : AndroidViewModel(application) {
+class HomeViewModel(private val mRepository: CityRepository,
+                    private val weatherInfoRepository: WeatherInfoRepository,
+) : ViewModel() {
 
-    private var mRepository: CityRepository? = null
-    private var mAllCities: LiveData<List<City?>?>? = null
+    private var mAllCities: LiveData<List<City>>? = null
 
     init {
-        mRepository =
-            CityRepository(
-                application
-            )
-        mAllCities = mRepository?.getAllCities()
+        mAllCities = mRepository.allCities
     }
 
-    fun getAllCities(): LiveData<List<City?>?>? {
+    fun getAllCities(): LiveData<List<City>>? {
         return mAllCities
     }
 
     fun insert(city: City?) {
-        mRepository?.insert(city)
+        mRepository.insert(city)
     }
 
     fun deleteAll() {
-        mRepository?.deleteAll()
+        mRepository.deleteAll()
     }
 
     fun deleteCity(city: City?) {
-        mRepository?.deleteCity(city)
+        mRepository.deleteCity(city)
     }
 
     fun updateCity(city: City?) {
-        mRepository?.updateCity(city)
+        mRepository.updateCity(city)
     }
+
+    //------------
+    fun getResultLiveData(): MutableLiveData<CurrentWeatherResponse> {
+        return weatherInfoRepository.getResultLiveData()
+    }
+
+    fun getFailLiveData(): MutableLiveData<String> {
+        return weatherInfoRepository.getFailLiveData()
+    }
+
+    fun getCurrentWeather(q: String, unit: String, lang: String, appId: String) {
+        weatherInfoRepository.getCurrentWeather(q, unit, lang, appId)
+    }
+
 }
