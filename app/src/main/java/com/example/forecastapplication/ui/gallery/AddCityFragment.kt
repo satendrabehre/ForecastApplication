@@ -10,20 +10,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.forecastapplication.R
 
-class GalleryFragment : Fragment() {
+class AddCityFragment : Fragment() {
 
-    private lateinit var galleryViewModel: GalleryViewModel
+    private lateinit var addCityViewModel: AddCityViewModel
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        galleryViewModel =
-                ViewModelProvider(this).get(GalleryViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_gallery, container, false)
+        addCityViewModel =
+                ViewModelProvider(this).get(AddCityViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_add_city, container, false)
         val textView: TextView = root.findViewById(R.id.text_gallery)
-        galleryViewModel.text.observe(viewLifecycleOwner, Observer {
+        addCityViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
         return root

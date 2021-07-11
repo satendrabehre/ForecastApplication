@@ -30,7 +30,7 @@ class HomeFragment : Fragment() {
         })
 
         textView.setOnClickListener {
-            findNavController().navigate(R.id.action_home_to_gallery)
+            findNavController().navigate(R.id.action_home_to_map)
         }
 
         //requireContext().setSupportActionBar(root.findViewById(R.id.toolbar))
