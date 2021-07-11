@@ -10,8 +10,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.forecastapplication.R
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -22,7 +26,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import java.util.*
 
 
-class MapsFragment : Fragment(), GoogleMap.OnMapClickListener{
+class MapsFragment : DialogFragment(), GoogleMap.OnMapClickListener{
     private lateinit var viewModel: MapViewModel
     private val callback = OnMapReadyCallback { googleMap ->
         /**
@@ -34,9 +38,9 @@ class MapsFragment : Fragment(), GoogleMap.OnMapClickListener{
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
-        val sydney = LatLng(-34.0, 151.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        val mumbai = LatLng(19.090760, 72.867333)
+        //googleMap.addMarker(MarkerOptions().position(mumbai).title("Marker in Mumbai"))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(mumbai))
         googleMap.setOnMapClickListener(this)
     }
 
@@ -98,7 +102,12 @@ class MapsFragment : Fragment(), GoogleMap.OnMapClickListener{
         builder.setTitle(city)
         builder.setMessage("Your selected city")
         builder.setPositiveButton("Select") { dialogInterface: DialogInterface, i: Int ->
-
+            /*findNavController().previousBackStackEntry?.savedStateHandle?.set(
+                "key",
+                true
+            )*/
+            findNavController().previousBackStackEntry?.savedStateHandle?.set("city", city)
+            dismiss()
         }
         builder.setNegativeButton("Cancel") { dialogInterface: DialogInterface, i: Int ->
             dialogInterface.dismiss()

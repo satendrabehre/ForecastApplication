@@ -25,7 +25,7 @@
         app:destination="@id/nav_home"/>
     </fragment>
 
-    <fragment
+    <dialog
         android:id="@+id/nav_map"
         android:name="com.example.forecastapplication.ui.map.MapsFragment"
         android:label="@string/menu_map"
