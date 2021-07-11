@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.forecastapplication.R
+import com.google.android.material.appbar.CollapsingToolbarLayout
 
 class HomeFragment : Fragment() {
 
@@ -31,6 +32,9 @@ class HomeFragment : Fragment() {
         textView.setOnClickListener {
             findNavController().navigate(R.id.action_home_to_gallery)
         }
+
+        //requireContext().setSupportActionBar(root.findViewById(R.id.toolbar))
+        //root.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout).title = title
 
         return root
     }
