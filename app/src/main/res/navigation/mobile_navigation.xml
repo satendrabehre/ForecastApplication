@@ -15,25 +15,10 @@
             app:destination="@id/nav_map"/>
     </fragment>
 
-    <fragment
-        android:id="@+id/nav_add_city"
-        android:name="com.example.forecastapplication.ui.gallery.AddCityFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_add_city">
-    <action
-        android:id="@+id/action_map_to_home"
-        app:destination="@id/nav_home"/>
-    </fragment>
-
     <dialog
         android:id="@+id/nav_map"
         android:name="com.example.forecastapplication.ui.map.MapsFragment"
         android:label="@string/menu_map"
         tools:layout="@layout/fragment_maps" />
 
-    <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.example.forecastapplication.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
 </navigation>
