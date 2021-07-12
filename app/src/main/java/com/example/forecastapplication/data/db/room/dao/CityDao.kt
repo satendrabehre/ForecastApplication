@@ -1,37 +1,27 @@
-package com.example.forecastapplication.data.db.room.dao;
+package com.example.forecastapplication.data.db.room.dao
 
-import androidx.lifecycle.LiveData;
-import androidx.room.Dao;
-import androidx.room.Delete;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
-import androidx.room.Update;
-
-
-import com.example.forecastapplication.data.db.room.entity.City;
-
-import java.util.List;
+import androidx.lifecycle.LiveData
+import androidx.room.*
+import com.example.forecastapplication.data.db.room.entity.City
 
 @Dao
-public interface CityDao {
-
+interface CityDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(City city);
+    suspend fun insert(city: City?)
 
     @Query("DELETE FROM city_table")
-    void deleteAll();
+    fun deleteAll()
 
-    @Query("SELECT * from city_table ORDER BY id DESC")
-    LiveData<List<City>> getAllCity();
+    @get:Query("SELECT * from city_table ORDER BY id DESC")
+    val allCity: LiveData<List<City?>?>?
 
     // This method is used to test if table has at least one data.
-    @Query("SELECT * from city_table LIMIT 1")
-    City[] getAnyCity();
+    @get:Query("SELECT * from city_table LIMIT 1")
+    val anyCity: Array<City?>?
 
     @Delete
-    void deleteCity(City city);
+    suspend fun deleteCity(city: City?)
 
     @Update
-    void update(City... city);
+    suspend fun update(vararg city: City?)
 }

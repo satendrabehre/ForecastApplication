@@ -3,27 +3,31 @@ package com.example.forecastapplication.ui.home
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.forecastapplication.data.repositories.CityRepository
 import com.example.forecastapplication.data.db.room.entity.City
 import com.example.forecastapplication.data.repositories.WeatherInfoRepository
 import com.example.forecastapplication.data.response.currentweather.CurrentWeatherResponse
+import kotlinx.coroutines.launch
 
 class HomeViewModel(private val mRepository: CityRepository,
                     private val weatherInfoRepository: WeatherInfoRepository,
 ) : ViewModel() {
 
-    private var mAllCities: LiveData<List<City>>? = null
+    private var mAllCities: LiveData<List<City?>?>? = null
 
     init {
         mAllCities = mRepository.allCities
     }
 
-    fun getAllCities(): LiveData<List<City>>? {
+    fun getAllCities(): LiveData<List<City?>?>? {
         return mAllCities
     }
 
     fun insert(city: City?) {
-        mRepository.insert(city)
+        viewModelScope.launch {
+            mRepository.insert(city)
+        }
     }
 
     fun deleteAll() {
@@ -31,11 +35,15 @@ class HomeViewModel(private val mRepository: CityRepository,
     }
 
     fun deleteCity(city: City?) {
-        mRepository.deleteCity(city)
+        viewModelScope.launch {
+            mRepository.deleteCity(city)
+        }
     }
 
     fun updateCity(city: City?) {
-        mRepository.updateCity(city)
+        viewModelScope.launch {
+            mRepository.updateCity(city)
+        }
     }
 
     //------------

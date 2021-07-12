@@ -30,10 +30,9 @@ class AppModule(private val application: MyApplication) {
         return CityRoomDatabase.getDatabase(ctx)
     }
 
-
     @Provides
     @Singleton
     fun providesApiService(): ApiService {
-        return ApiClient.getClient().create(ApiService::class.java)
+        return ApiClient.client!!.create(ApiService::class.java)
     }
 }

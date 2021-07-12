@@ -42,9 +42,6 @@ class HomeFragment : Fragment() {
             .get(HomeViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
         val textView: TextView = root.findViewById(R.id.text_home)
-        homeViewModel.getAllCities()?.observe(viewLifecycleOwner, Observer {
-            Log.i(Companion.TAG, "All Cities: ${it.toString()}")
-        })
 
         textView.setOnClickListener {
             findNavController().navigate(R.id.action_home_to_map)
@@ -80,9 +77,9 @@ class HomeFragment : Fragment() {
         })
         recyclerView.adapter = adapter
 
-        homeViewModel.getAllCities()?.observe(viewLifecycleOwner, {
-            adapter!!.setData(it as List<City>?)
-            it.let {
+        homeViewModel.getAllCities()?.observe(viewLifecycleOwner, { list->
+            adapter!!.setData(list as List<City>?)
+            list?.let {
                 if(it.isNotEmpty()) {
                     val cityName = it[0].cityName
                     tvCity?.text = cityName

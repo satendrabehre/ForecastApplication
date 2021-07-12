@@ -1,71 +1,60 @@
-package com.example.forecastapplication.data.server;
+package com.example.forecastapplication.data.server
 
-import androidx.annotation.NonNull;
+import com.example.forecastapplication.Constants
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
+import java.util.concurrent.TimeUnit
 
-import com.example.forecastapplication.Constants;
+object ApiClient {
+    private var retrofit: Retrofit? = null
+    private const val REQUEST_TIMEOUT = 60
+    private var okHttpClient: OkHttpClient? = null
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
+    /**
+     * @return retrofit instance [Retrofit]
+     */
+    val client: Retrofit?
+        get() {
+            if (okHttpClient == null) initOkHttp()
+            if (retrofit == null) {
+                retrofit = Retrofit.Builder()
+                    .baseUrl(Constants.BASE_URL)
+                    .client(okHttpClient) //.addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+            }
+            return retrofit
+        }
 
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+    /**
+     * init instance of [OkHttpClient]
+     */
+    private fun initOkHttp() {
+        val httpClient: OkHttpClient.Builder = OkHttpClient().newBuilder()
+            .connectTimeout(REQUEST_TIMEOUT.toLong(), TimeUnit.SECONDS)
+            .readTimeout(REQUEST_TIMEOUT.toLong(), TimeUnit.SECONDS)
+            .writeTimeout(REQUEST_TIMEOUT.toLong(), TimeUnit.SECONDS)
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
 
-public class ApiClient {
-  private static Retrofit retrofit = null;
-  private static int REQUEST_TIMEOUT = 60;
-  private static OkHttpClient okHttpClient;
-  //public static String BASE_URL = "https://api.openweathermap.org/data/2.5/";
-  /**
-   * @return retrofit instance {@link Retrofit}
-   */
-  public static Retrofit getClient() {
-
-    if (okHttpClient == null)
-      initOkHttp();
-
-    if (retrofit == null) {
-      retrofit = new Retrofit.Builder()
-          .baseUrl(Constants.BASE_URL)
-          .client(okHttpClient)
-          //.addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-          .addConverterFactory(GsonConverterFactory.create())
-          .build();
+        //httpClient.addInterceptor(interceptor);
+        httpClient.addInterceptor(object : Interceptor {
+            @Throws(IOException::class)
+            override fun intercept(chain: Interceptor.Chain): Response {
+                val original: Request = chain.request()
+                val requestBuilder: Request.Builder = original.newBuilder()
+                    .addHeader("Accept", "application/json")
+                    .addHeader("Content-Type", "application/json")
+                val request: Request = requestBuilder.build()
+                return chain.proceed(request)
+            }
+        })
+        okHttpClient = httpClient.build()
     }
-    return retrofit;
-  }
-
-  /**
-   * init instance of {@link OkHttpClient}
-   */
-  private static void initOkHttp() {
-    OkHttpClient.Builder httpClient = new OkHttpClient().newBuilder()
-        .connectTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
-        .readTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
-        .writeTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS);
-
-    HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-    interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-    //httpClient.addInterceptor(interceptor);
-
-    httpClient.addInterceptor(new Interceptor() {
-      @Override
-      public Response intercept(@NonNull Chain chain) throws IOException {
-        Request original = chain.request();
-        Request.Builder requestBuilder = original.newBuilder()
-            .addHeader("Accept", "application/json")
-            .addHeader("Content-Type", "application/json");
-
-        Request request = requestBuilder.build();
-        return chain.proceed(request);
-      }
-    });
-
-    okHttpClient = httpClient.build();
-  }
 }
